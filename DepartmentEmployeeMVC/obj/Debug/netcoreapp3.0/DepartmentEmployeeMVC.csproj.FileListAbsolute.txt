@@ -130,3 +130,4 @@ C:\Users\Shirish\Projects\workspace\CSharp\DepartmentEmployeeMVC\DepartmentEmplo
 C:\Users\Shirish\Projects\workspace\CSharp\DepartmentEmployeeMVC\DepartmentEmployeeMVC\obj\Debug\netcoreapp3.0\Razor\Views\Departments\Details.cshtml.g.cs
 C:\Users\Shirish\Projects\workspace\CSharp\DepartmentEmployeeMVC\DepartmentEmployeeMVC\obj\Debug\netcoreapp3.0\Razor\Views\Employees\Create.cshtml.g.cs
 C:\Users\Shirish\Projects\workspace\CSharp\DepartmentEmployeeMVC\DepartmentEmployeeMVC\obj\Debug\netcoreapp3.0\Razor\Views\Employees\Delete.cshtml.g.cs
+C:\Users\Shirish\Projects\workspace\CSharp\DepartmentEmployeeMVC\DepartmentEmployeeMVC\obj\Debug\netcoreapp3.0\Razor\Views\Employees\Edit.cshtml.g.cs
