@@ -53,7 +53,7 @@ namespace DepartmentEmployeeMVC.Controllers
                     return View(employees);
                 }
             }
-            
+
         }
 
         // GET: Employee/Details/5
@@ -69,7 +69,7 @@ namespace DepartmentEmployeeMVC.Controllers
                                         WHERE e.Id = @id";
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     var reader = cmd.ExecuteReader();
-                  
+
                     if (reader.Read())
                     {
                         var employee = new Employee
@@ -88,10 +88,10 @@ namespace DepartmentEmployeeMVC.Controllers
                     }
                     reader.Close();
                     return NotFound();
-                    
+
                 }
             }
-            
+
         }
 
         // GET: Employee/Create
@@ -169,19 +169,50 @@ namespace DepartmentEmployeeMVC.Controllers
         // GET: Employee/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT Id, FirstName, LastName FROM Employee WHERE Id = @id";
+                    cmd.Parameters.Add(new SqlParameter("@id", id));
+                    var reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        var employee = new Employee
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                            LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                        };
+
+                        reader.Close();
+                        return View(employee);
+                    }
+                    return NotFound();
+                }
+            }
         }
 
         // POST: Employee/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, Employee employee)
         {
             try
             {
-                // TODO: Add delete logic here
-
-                return RedirectToAction(nameof(Index));
+               using(SqlConnection conn = Connection)
+                {
+                    conn.Open();
+                    using(SqlCommand cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = @"DELETE FROM Employee WHERE Id = @id";
+                        cmd.Parameters.Add(new SqlParameter("@id", id));
+                        cmd.ExecuteNonQuery();
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
             }
             catch
             {
