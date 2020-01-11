@@ -157,7 +157,7 @@ namespace DepartmentEmployeeMVC.Controllers
                 using(SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"SELECT Id, FirstName, LastName, DepartmentId 
-                                        FROM Employee 
+                                        FROM Employees 
                                         WHERE Id = @id";
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     SqlDataReader reader = cmd.ExecuteReader();
@@ -201,7 +201,7 @@ namespace DepartmentEmployeeMVC.Controllers
                         conn.Open();
                         using (SqlCommand cmd = conn.CreateCommand())
                         {
-                            cmd.CommandText = @"UPDATE Employee 
+                            cmd.CommandText = @"UPDATE Employees 
                                             Set FirstName = @firstName, 
                                             LastName = @lastName, 
                                             DepartmentId = @departmentId
@@ -228,12 +228,17 @@ namespace DepartmentEmployeeMVC.Controllers
         // GET: Employee/Delete/5
         public ActionResult Delete(int id)
         {
+            var departments = GetDepartments().Select(d => new SelectListItem
+            {
+                Text = d.Name,
+                Value = d.Id.ToString()
+            }).ToList();
             using (SqlConnection conn = Connection)
             {
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"SELECT Id, FirstName, LastName FROM Employees WHERE Id = @id";
+                    cmd.CommandText = @"SELECT Id, FirstName, LastName, DepartmentId FROM Employees WHERE Id = @id";
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     var reader = cmd.ExecuteReader();
 
@@ -244,11 +249,18 @@ namespace DepartmentEmployeeMVC.Controllers
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
                             LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                            DepartmentId = reader.GetInt32(reader.GetOrdinal("DepartmentId"))
                         };
 
                         reader.Close();
-                        return View(employee);
+                        var viewModel = new EmployeeViewModel
+                        {
+                            Employee = employee,
+                            Departments = departments
+                        };
+                        return View(viewModel);
                     }
+                    
                     return NotFound();
                 }
             }
