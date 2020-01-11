@@ -146,23 +146,82 @@ namespace DepartmentEmployeeMVC.Controllers
         // GET: Employee/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            var departments = GetDepartments().Select(d => new SelectListItem
+            {
+                Text = d.Name,
+                Value = d.Id.ToString()
+            }).ToList();
+            using(SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using(SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT Id, FirstName, LastName, DepartmentId 
+                                        FROM Employee 
+                                        WHERE Id = @id";
+                    cmd.Parameters.Add(new SqlParameter("@id", id));
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    if(reader.Read())
+                    {
+                        Employee employee = new Employee
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                            LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                            DepartmentId = reader.GetInt32(reader.GetOrdinal("DepartmentId"))
+                        };
+                        reader.Close();
+
+                        var viewModel = new EmployeeViewModel
+                        {
+                            Employee = employee,
+                            Departments = departments
+                        };
+                        return View(viewModel);
+                    }
+                    reader.Close();
+                    return NotFound();
+                }
+            }
+            
         }
 
         // POST: Employee/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, Employee  employee)
         {
-            try
             {
-                // TODO: Add update logic here
 
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
+                try
+                {
+                    using (SqlConnection conn = Connection)
+                    {
+                        conn.Open();
+                        using (SqlCommand cmd = conn.CreateCommand())
+                        {
+                            cmd.CommandText = @"UPDATE Employee 
+                                            Set FirstName = @firstName, 
+                                            LastName = @lastName, 
+                                            DepartmentId = @departmentId
+                                            WHERE Id = @id";
+
+                            cmd.Parameters.Add(new SqlParameter("@firstName", employee.FirstName));
+                            cmd.Parameters.Add(new SqlParameter("@lastName", employee.LastName));
+                            cmd.Parameters.Add(new SqlParameter("@departmentId", employee.DepartmentId));
+                            cmd.Parameters.Add(new SqlParameter("@id", id));
+
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    return View();
+                }
             }
         }
 
