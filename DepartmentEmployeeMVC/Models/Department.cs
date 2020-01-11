@@ -11,7 +11,7 @@ namespace DepartmentEmployeeMVC.Models
         public int Id { get; set; }
         [Display(Name = "Department Name")]
         public string Name { get; set; }
-        public List<Employee> Employees { get; set; } = new List<Employee>();
+        public List<Employee> Employees { get; set; } 
 
 
     }

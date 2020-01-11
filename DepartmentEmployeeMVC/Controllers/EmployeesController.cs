@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DepartmentEmployeeMVC.Models;
+using DepartmentEmployeeMVC.Models.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 
@@ -95,17 +97,43 @@ namespace DepartmentEmployeeMVC.Controllers
         // GET: Employee/Create
         public ActionResult Create()
         {
-            return View();
+            var departments = GetDepartments().Select(d => new SelectListItem
+            {
+                Text = d.Name,
+                Value = d.Id.ToString()
+            }).ToList();
+
+            var viewModel = new EmployeeViewModel()
+            {
+                Employee = new Employee(),
+                Departments = departments
+            };
+
+            return View(viewModel);
         }
 
         // POST: Employee/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Employee employee)
         {
             try
             {
-                // TODO: Add insert logic here
+                using (SqlConnection conn = Connection)
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = @"INSERT INTO Employee (FirstName, LastName, DepartmentId)
+                                            VALUES (@firstName, @lastName, @departmentId)";
+
+                        cmd.Parameters.Add(new SqlParameter("@firstName", employee.FirstName));
+                        cmd.Parameters.Add(new SqlParameter("@lastName", employee.LastName));
+                        cmd.Parameters.Add(new SqlParameter("@departmentId", employee.DepartmentId));
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
 
                 return RedirectToAction(nameof(Index));
             }
@@ -158,6 +186,36 @@ namespace DepartmentEmployeeMVC.Controllers
             catch
             {
                 return View();
+            }
+        }
+        // GET: Departments List
+        private List<Department> GetDepartments()
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT Id, Name 
+                                       FROM Department";
+
+                    var reader = cmd.ExecuteReader();
+
+                    var departments = new List<Department>();
+
+                    while (reader.Read())
+                    {
+                        departments.Add(new Department
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Name = reader.GetString(reader.GetOrdinal("Name"))
+                        });
+                    }
+
+                    reader.Close();
+
+                    return departments;
+                }
             }
         }
     }

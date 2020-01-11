@@ -128,3 +128,4 @@ C:\Users\Shirish\Projects\workspace\CSharp\DepartmentEmployeeMVC\DepartmentEmplo
 C:\Users\Shirish\Projects\workspace\CSharp\DepartmentEmployeeMVC\DepartmentEmployeeMVC\obj\Debug\netcoreapp3.0\Razor\Views\Employees\Details.cshtml.g.cs
 C:\Users\Shirish\Projects\workspace\CSharp\DepartmentEmployeeMVC\DepartmentEmployeeMVC\obj\Debug\netcoreapp3.0\Razor\Views\Departments\Index.cshtml.g.cs
 C:\Users\Shirish\Projects\workspace\CSharp\DepartmentEmployeeMVC\DepartmentEmployeeMVC\obj\Debug\netcoreapp3.0\Razor\Views\Departments\Details.cshtml.g.cs
+C:\Users\Shirish\Projects\workspace\CSharp\DepartmentEmployeeMVC\DepartmentEmployeeMVC\obj\Debug\netcoreapp3.0\Razor\Views\Employees\Create.cshtml.g.cs
