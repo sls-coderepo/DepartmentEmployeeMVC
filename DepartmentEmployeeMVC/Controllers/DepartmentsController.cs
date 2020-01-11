@@ -34,7 +34,7 @@ namespace DepartmentEmployeeMVC.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"SELECT Id, Name FROM Department";
+                    cmd.CommandText = @"SELECT Id, Name FROM Departments";
                     var reader = cmd.ExecuteReader();
                     var departments = new List<Department>();
                     while (reader.Read())
@@ -62,8 +62,8 @@ namespace DepartmentEmployeeMVC.Controllers
                 {
                     cmd.CommandText = @"SELECT d.Id AS DepartmentId, d.Name AS DepartmentName, e.FirstName, 
                                         e.LastName, e.Id as EmployeeId
-                                        FROM Department d
-                                        LEFT JOIN Employee e ON d.Id = e.DepartmentId
+                                        FROM Departments d
+                                        LEFT JOIN Employees e ON d.Id = e.DepartmentId
                                         WHERE d.Id = @Id";
                     cmd.Parameters.Add(new SqlParameter("@Id", id));
                     var reader = cmd.ExecuteReader();
@@ -116,59 +116,155 @@ namespace DepartmentEmployeeMVC.Controllers
         // POST: Department/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Department department)
         {
-            try
             {
-                // TODO: Add insert logic here
+                try
+                {
+                    using (SqlConnection conn = Connection)
+                    {
+                        conn.Open();
+                        using (SqlCommand cmd = conn.CreateCommand())
+                        {
+                            cmd.CommandText = @"INSERT INTO Departments (Name)
+                                            VALUES (@Name)";
 
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
+                            cmd.Parameters.Add(new SqlParameter("@Name", department.Name));
+
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch(Exception ex)
+                {
+                    return View();
+                }
             }
         }
 
         // GET: Department/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT Id, Name
+                                        FROM Departments 
+                                        WHERE Id = @id";
+
+                    cmd.Parameters.Add(new SqlParameter("@id", id));
+
+                    var reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        var department = new Department
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Name = reader.GetString(reader.GetOrdinal("Name"))
+                        };
+
+                        reader.Close();
+                        return View(department);
+                    }
+                    reader.Close();
+                    return NotFound();
+                }
+            }
+
         }
 
         // POST: Department/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, Department department)
         {
-            try
             {
-                // TODO: Add update logic here
+                try
+                {
+                    using (SqlConnection conn = Connection)
+                    {
+                        conn.Open();
+                        using (SqlCommand cmd = conn.CreateCommand())
+                        {
+                            cmd.CommandText = @"UPDATE Departments
+                                            SET Name = @Name
+                                            WHERE Id = @id";
 
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
+                            cmd.Parameters.Add(new SqlParameter("@Name", department.Name));
+                            cmd.Parameters.Add(new SqlParameter("@id", id));
+
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch
+                {
+                    return View();
+                }
             }
         }
 
         // GET: Department/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            {
+                using (SqlConnection conn = Connection)
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = @"SELECT Id, Name FROM Departments WHERE Id = @id";
+
+                        cmd.Parameters.Add(new SqlParameter("@id", id));
+
+                        var reader = cmd.ExecuteReader();
+
+                        if (reader.Read())
+                        {
+                            var department = new Department
+                            {
+                                Name = reader.GetString(reader.GetOrdinal("Name")),
+                                Id = reader.GetInt32(reader.GetOrdinal("Id"))
+                            };
+
+                            reader.Close();
+                            return View(department);
+                        }
+                        return NotFound();
+                    }
+                }
+            }
         }
 
         // POST: Department/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, Department department)
         {
             try
             {
-                // TODO: Add delete logic here
+                using (SqlConnection conn = Connection)
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = @"DELETE FROM Departments WHERE Id = @id";
 
-                return RedirectToAction(nameof(Index));
+                        cmd.Parameters.Add(new SqlParameter("@id", id));
+
+                        cmd.ExecuteNonQuery();
+
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+
             }
             catch
             {

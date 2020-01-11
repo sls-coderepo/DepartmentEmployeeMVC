@@ -36,7 +36,7 @@ namespace DepartmentEmployeeMVC.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"SELECT Id, FirstName, LastName, DepartmentId FROM Employee";
+                    cmd.CommandText = @"SELECT Id, FirstName, LastName, DepartmentId FROM Employees";
                     var reader = cmd.ExecuteReader();
                     var employees = new List<Employee>();
                     while (reader.Read())
@@ -65,7 +65,7 @@ namespace DepartmentEmployeeMVC.Controllers
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"SELECT e.Id, e.FirstName, e.LastName, d.Id AS DepartmentId, d.[Name] AS DepartmentName 
-                                        FROM Employee e JOIN Department d ON e.DepartmentId = d.Id
+                                        FROM Employees e JOIN Departments d ON e.DepartmentId = d.Id
                                         WHERE e.Id = @id";
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     var reader = cmd.ExecuteReader();
@@ -124,7 +124,7 @@ namespace DepartmentEmployeeMVC.Controllers
                     conn.Open();
                     using (SqlCommand cmd = conn.CreateCommand())
                     {
-                        cmd.CommandText = @"INSERT INTO Employee (FirstName, LastName, DepartmentId)
+                        cmd.CommandText = @"INSERT INTO Employees (FirstName, LastName, DepartmentId)
                                             VALUES (@firstName, @lastName, @departmentId)";
 
                         cmd.Parameters.Add(new SqlParameter("@firstName", employee.FirstName));
@@ -174,7 +174,7 @@ namespace DepartmentEmployeeMVC.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"SELECT Id, FirstName, LastName FROM Employee WHERE Id = @id";
+                    cmd.CommandText = @"SELECT Id, FirstName, LastName FROM Employees WHERE Id = @id";
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     var reader = cmd.ExecuteReader();
 
@@ -207,7 +207,7 @@ namespace DepartmentEmployeeMVC.Controllers
                     conn.Open();
                     using(SqlCommand cmd = conn.CreateCommand())
                     {
-                        cmd.CommandText = @"DELETE FROM Employee WHERE Id = @id";
+                        cmd.CommandText = @"DELETE FROM Employees WHERE Id = @id";
                         cmd.Parameters.Add(new SqlParameter("@id", id));
                         cmd.ExecuteNonQuery();
                         return RedirectToAction(nameof(Index));
@@ -228,7 +228,7 @@ namespace DepartmentEmployeeMVC.Controllers
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"SELECT Id, Name 
-                                       FROM Department";
+                                       FROM Departments";
 
                     var reader = cmd.ExecuteReader();
 
